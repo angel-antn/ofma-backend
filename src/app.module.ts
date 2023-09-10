@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { UserModule } from './user/user.module';
+import { AdminUserModule } from './admin-user/admin-user.module';
+import { MusicianModule } from './musician/musician.module';
+import { ConcertModule } from './concert/concert.module';
+import { ExclusiveContentModule } from './exclusive-content/exclusive-content.module';
 
 @Module({
   imports: [
@@ -17,6 +22,10 @@ import { UserModule } from './user/user.module';
       synchronize: true,
     }),
     UserModule,
+    AdminUserModule,
+    MusicianModule,
+    ConcertModule,
+    ExclusiveContentModule,
   ],
   controllers: [],
   providers: [],

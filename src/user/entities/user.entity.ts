@@ -13,12 +13,16 @@ export class User {
 
   @Column('text', { unique: true })
   email: string;
+
   @Column('text', { select: false })
   password: string;
+
   @Column('text')
   name: string;
+
   @Column('text')
   lastname: string;
+
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
