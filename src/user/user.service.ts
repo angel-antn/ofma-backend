@@ -5,14 +5,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { Repository } from 'typeorm';
 
 import { CreateUserDto, LoginUserDto } from './dto/';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
@@ -41,7 +41,7 @@ export class UserService {
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const user = await this.userRepository.findOne({
-      where: { email, isActive: true },
+      where: { email: email.toLocaleLowerCase(), isActive: true },
       select: {
         email: true,
         password: true,

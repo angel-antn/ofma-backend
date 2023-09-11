@@ -5,18 +5,21 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 
 import { CreateAdminUserDto, LoginAdminUserDto } from './dto';
 import { AdminUser } from './entities/admin-user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AdminUserService {
   constructor(
     @InjectRepository(AdminUser)
     private readonly adminUserRepository: Repository<AdminUser>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(createAdminUserDto: CreateAdminUserDto) {
@@ -31,7 +34,10 @@ export class AdminUserService {
       await this.adminUserRepository.save(adminUser);
       delete adminUser.isActive;
       delete adminUser.password;
-      return { 'admin-user': adminUser };
+      return {
+        'admin-user': adminUser,
+        token: this.generateJwt({ id: adminUser.id }),
+      };
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -40,7 +46,7 @@ export class AdminUserService {
   async login(loginUserDto: LoginAdminUserDto) {
     const { email, password } = loginUserDto;
     const adminUser = await this.adminUserRepository.findOne({
-      where: { email, isActive: true },
+      where: { email: email.toLocaleLowerCase(), isActive: true },
       select: {
         email: true,
         password: true,
@@ -54,7 +60,14 @@ export class AdminUserService {
       throw new UnauthorizedException('not valid password');
     }
     delete adminUser.password;
-    return { 'admin-user': adminUser };
+    return {
+      'admin-user': adminUser,
+      token: this.generateJwt({ id: adminUser.id }),
+    };
+  }
+
+  private generateJwt(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
   }
 
   private handleExceptions(err): never {

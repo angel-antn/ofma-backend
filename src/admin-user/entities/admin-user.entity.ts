@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('AdminUsers')
 export class AdminUser {
@@ -13,4 +19,10 @@ export class AdminUser {
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  checkFieldsBefore() {
+    this.email = this.email.toLowerCase().trim();
+  }
 }
