@@ -7,6 +7,7 @@ import { AdminUserModule } from './admin-user/admin-user.module';
 import { MusicianModule } from './musician/musician.module';
 import { ConcertModule } from './concert/concert.module';
 import { ExclusiveContentModule } from './exclusive-content/exclusive-content.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ExclusiveContentModule } from './exclusive-content/exclusive-content.mo
     MusicianModule,
     ConcertModule,
     ExclusiveContentModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

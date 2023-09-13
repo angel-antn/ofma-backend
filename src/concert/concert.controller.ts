@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+  Query,
+} from '@nestjs/common';
 import { ConcertService } from './concert.service';
 import { CreateConcertDto } from './dto/create-concert.dto';
 import { UpdateConcertDto } from './dto/update-concert.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('concert')
 export class ConcertController {
@@ -13,22 +24,25 @@ export class ConcertController {
   }
 
   @Get()
-  findAll() {
-    return this.concertService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.concertService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.concertService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.concertService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateConcertDto: UpdateConcertDto) {
-    return this.concertService.update(+id, updateConcertDto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateConcertDto: UpdateConcertDto,
+  ) {
+    return this.concertService.update(id, updateConcertDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.concertService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.concertService.remove(id);
   }
 }

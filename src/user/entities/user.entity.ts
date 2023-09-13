@@ -26,6 +26,9 @@ export class User {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  @Column('int')
+  gender: number;
+
   @BeforeInsert()
   @BeforeUpdate()
   checkFieldsBefore() {
