@@ -20,9 +20,6 @@ export class Concert {
   @Column('time', { array: true })
   startAtHours: string[];
 
-  @Column('time', { array: true })
-  endAtHours: string[];
-
   @Column('date')
   startDate: Date;
 
@@ -56,10 +53,6 @@ export class Concert {
           auxHour = this.startAtHours[j];
           this.startAtHours[j] = this.startAtHours[j + 1];
           this.startAtHours[j + 1] = auxHour;
-
-          auxHour = this.endAtHours[j];
-          this.endAtHours[j] = this.endAtHours[j + 1];
-          this.endAtHours[j + 1] = auxHour;
         }
       }
     }

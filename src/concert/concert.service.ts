@@ -4,11 +4,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { CreateConcertDto } from './dto/create-concert.dto';
 import { UpdateConcertDto } from './dto/update-concert.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Concert } from './entities/concert.entity';
-import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
@@ -19,13 +20,10 @@ export class ConcertService {
   ) {}
 
   async create(createConcertDto: CreateConcertDto) {
-    const { dates, endAtHours, startAtHours } = createConcertDto;
-    if (
-      dates.length !== startAtHours.length ||
-      dates.length !== endAtHours.length
-    )
+    const { dates, startAtHours } = createConcertDto;
+    if (dates.length !== startAtHours.length)
       throw new BadRequestException(
-        'dates, endAtHours and startAtHours are Arrays and they must have the same length',
+        'dates and startAtHours are Arrays and they must have the same length',
       );
     try {
       const { geo, ...concertInfo } = createConcertDto;
@@ -62,28 +60,25 @@ export class ConcertService {
   }
 
   async findOne(id: string) {
-    const result = await this.concertRepository.findOneBy({ id });
+    const result = await this.concertRepository.findOneBy({
+      id,
+      isActive: true,
+    });
     if (!result) throw new NotFoundException('Concert was not found');
     return result;
   }
 
   async update(id: string, updateConcertDto: UpdateConcertDto) {
-    const { dates, startAtHours, endAtHours } = updateConcertDto;
+    const { dates, startAtHours } = updateConcertDto;
 
-    if (
-      (dates || startAtHours || endAtHours) &&
-      !(dates && startAtHours && endAtHours)
-    )
+    if ((dates || startAtHours) && !(dates && startAtHours))
       throw new BadRequestException(
-        'dates, endAtHours and startAtHours must be sent together or neither sent',
+        'dates and startAtHours must be sent together or neither sent',
       );
 
-    if (
-      dates?.length !== startAtHours?.length ||
-      dates?.length !== endAtHours?.length
-    )
+    if (dates?.length !== startAtHours?.length)
       throw new BadRequestException(
-        'dates, endAtHours and startAtHours are Arrays and they must have the same length',
+        'dates and startAtHours are Arrays and they must have the same length',
       );
 
     const concert = await this.concertRepository.preload({
@@ -97,7 +92,14 @@ export class ConcertService {
   }
 
   async remove(id: string) {
-    return `This action removes a #${id} concert`;
+    const concert = await this.concertRepository.preload({
+      id,
+      isActive: false,
+    });
+
+    if (!concert) throw new NotFoundException('Concert was not found');
+
+    return await this.concertRepository.save(concert);
   }
 
   private handleExceptions(err): never {

@@ -26,11 +26,6 @@ export class CreateConcertDto {
   @ArrayNotEmpty()
   startAtHours: string[];
 
-  @IsMilitaryTime({ each: true })
-  @IsArray()
-  @ArrayNotEmpty()
-  endAtHours: string[];
-
   @IsOptional()
   @IsLatLong()
   geo?: string;
