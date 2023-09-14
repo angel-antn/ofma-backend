@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { MusicianService } from './musician.service';
 import { CreateMusicianDto } from './dto/create-musician.dto';
 import { UpdateMusicianDto } from './dto/update-musician.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('musician')
 export class MusicianController {
@@ -13,22 +24,25 @@ export class MusicianController {
   }
 
   @Get()
-  findAll() {
-    return this.musicianService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.musicianService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.musicianService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.musicianService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMusicianDto: UpdateMusicianDto) {
-    return this.musicianService.update(+id, updateMusicianDto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateMusicianDto: UpdateMusicianDto,
+  ) {
+    return this.musicianService.update(id, updateMusicianDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.musicianService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.musicianService.remove(id);
   }
 }

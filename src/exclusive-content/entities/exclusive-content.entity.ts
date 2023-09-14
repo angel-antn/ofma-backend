@@ -11,8 +11,11 @@ export class ExclusiveContent {
   @Column('text')
   description: string;
 
-  @Column('text', { unique: true })
-  url: string;
+  @Column('text', { default: '' })
+  videoUrl: string;
+
+  @Column('text', { default: '' })
+  imageUrl: string;
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;

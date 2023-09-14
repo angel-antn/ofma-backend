@@ -20,6 +20,6 @@ export class Musician {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
-  @Column('text', { unique: true })
+  @Column('text', { default: '' })
   imageUrl: string;
 }

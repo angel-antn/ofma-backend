@@ -4,13 +4,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { CreateConcertDto } from './dto/create-concert.dto';
-import { UpdateConcertDto } from './dto/update-concert.dto';
 import { Concert } from './entities/concert.entity';
+import { CreateConcertDto } from './dto/create-concert.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { UpdateConcertDto } from './dto/update-concert.dto';
 
 @Injectable()
 export class ConcertService {
