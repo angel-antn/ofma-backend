@@ -13,5 +13,5 @@ export class CreateMusicianDto {
 
   @Type(() => Date)
   @IsDate()
-  dates: Date;
+  birthdate: Date;
 }

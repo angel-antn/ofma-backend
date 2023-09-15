@@ -19,7 +19,4 @@ export class Musician {
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
-
-  @Column('text', { default: '' })
-  imageUrl: string;
 }

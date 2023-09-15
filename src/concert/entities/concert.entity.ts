@@ -38,9 +38,6 @@ export class Concert {
   @Column('int')
   entriesQty: number;
 
-  @Column('text', { default: '' })
-  imageUrl: string;
-
   @BeforeInsert()
   @BeforeUpdate()
   fillFields() {

@@ -1,3 +1,4 @@
+import * as fs from 'node:fs';
 import {
   BadRequestException,
   Injectable,
@@ -18,12 +19,20 @@ export class MusicianService {
     private readonly musicianRepository: Repository<Musician>,
   ) {}
 
-  async create(createMusicianDto: CreateMusicianDto) {
+  async create(
+    createMusicianDto: CreateMusicianDto,
+    image: Express.Multer.File,
+  ) {
+    if (!image) throw new BadRequestException('image is required');
     try {
       const musician = this.musicianRepository.create({
         ...createMusicianDto,
       });
       await this.musicianRepository.save(musician);
+      fs.renameSync(
+        image.path,
+        `./uploads/musician/${musician.id}.${image.mimetype.split('/')[1]}`,
+      );
       return musician;
     } catch (err) {
       this.handleExceptions(err);

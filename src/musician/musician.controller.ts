@@ -8,19 +8,26 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MusicianService } from './musician.service';
 import { CreateMusicianDto } from './dto/create-musician.dto';
 import { UpdateMusicianDto } from './dto/update-musician.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { imageInterceptor } from 'src/file/interceptors/image.interceptor';
 
 @Controller('musician')
 export class MusicianController {
   constructor(private readonly musicianService: MusicianService) {}
 
   @Post()
-  create(@Body() createMusicianDto: CreateMusicianDto) {
-    return this.musicianService.create(createMusicianDto);
+  @UseInterceptors(imageInterceptor('musician'))
+  create(
+    @Body() createMusicianDto: CreateMusicianDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.musicianService.create(createMusicianDto, image);
   }
 
   @Get()

@@ -8,6 +8,7 @@ import { MusicianModule } from './musician/musician.module';
 import { ConcertModule } from './concert/concert.module';
 import { ExclusiveContentModule } from './exclusive-content/exclusive-content.module';
 import { CommonModule } from './common/common.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommonModule } from './common/common.module';
     ConcertModule,
     ExclusiveContentModule,
     CommonModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
