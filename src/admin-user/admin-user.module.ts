@@ -6,11 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdminUserService } from './admin-user.service';
 import { AdminUserController } from './admin-user.controller';
 import { AdminUser } from './entities/admin-user.entity';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AdminJwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   controllers: [AdminUserController],
-  providers: [AdminUserService, JwtStrategy],
+  providers: [AdminUserService, AdminJwtStrategy],
   imports: [
     TypeOrmModule.forFeature([AdminUser]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -25,6 +25,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       },
     }),
   ],
-  exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule],
+  exports: [TypeOrmModule, AdminJwtStrategy, PassportModule, JwtModule],
 })
 export class AdminUserModule {}

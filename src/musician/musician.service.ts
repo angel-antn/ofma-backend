@@ -29,11 +29,11 @@ export class MusicianService {
         ...createMusicianDto,
       });
       await this.musicianRepository.save(musician);
-      fs.renameSync(
-        image.path,
-        `./uploads/musician/${musician.id}.${image.mimetype.split('/')[1]}`,
-      );
-      return musician;
+      fs.renameSync(image.path, `./uploads/musician/${musician.id}.webp`);
+      return {
+        ...musician,
+        imageUrl: `${process.env.HOST_API}/file/musician/${musician.id}.webp`,
+      };
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -41,10 +41,16 @@ export class MusicianService {
 
   async findAll(paginationDto: PaginationDto) {
     const { page = 1, pageSize = 10 } = paginationDto;
-    const result = await this.musicianRepository.find({
+    let result: Musician[] = await this.musicianRepository.find({
       where: { isActive: true },
       take: pageSize,
       skip: (page - 1) * pageSize,
+    });
+    result = result.map((musician) => {
+      return {
+        ...musician,
+        imageUrl: `${process.env.HOST_API}/file/musician/${musician.id}.webp`,
+      };
     });
     const totalCount = await this.musicianRepository.count({
       where: { isActive: true },
@@ -58,10 +64,17 @@ export class MusicianService {
       isActive: true,
     });
     if (!result) throw new NotFoundException('Musician was not found');
-    return result;
+    return {
+      ...result,
+      imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
+    };
   }
 
-  async update(id: string, updateMusicianDto: UpdateMusicianDto) {
+  async update(
+    id: string,
+    updateMusicianDto: UpdateMusicianDto,
+    image: Express.Multer.File,
+  ) {
     const musician = await this.musicianRepository.preload({
       id,
       ...updateMusicianDto,
@@ -69,7 +82,14 @@ export class MusicianService {
 
     if (!musician) throw new NotFoundException('Musician was not found');
 
-    return await this.musicianRepository.save(musician);
+    if (image) fs.renameSync(image.path, `./uploads/musician/${id}.webp`);
+
+    const result = await this.musicianRepository.save(musician);
+
+    return {
+      ...result,
+      imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
+    };
   }
 
   async remove(id: string) {
@@ -80,7 +100,12 @@ export class MusicianService {
 
     if (!musician) throw new NotFoundException('Musician was not found');
 
-    return await this.musicianRepository.save(musician);
+    const result = await this.musicianRepository.save(musician);
+    delete result.isActive;
+    return {
+      ...result,
+      imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
+    };
   }
 
   private handleExceptions(err): never {

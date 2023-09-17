@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AdminJwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(AdminUser)
     private readonly userRepository: Repository<AdminUser>,

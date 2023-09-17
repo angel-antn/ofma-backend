@@ -38,7 +38,4 @@ lerna-debug.log*
 .env
 
 #images
-uploads/**/*.png
-uploads/**/*.jpg
-uploads/**/*.jpeg
 uploads/**/*.webp

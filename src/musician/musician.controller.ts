@@ -41,11 +41,13 @@ export class MusicianController {
   }
 
   @Patch(':id')
+  @UseInterceptors(imageInterceptor('musician'))
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateMusicianDto: UpdateMusicianDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.musicianService.update(id, updateMusicianDto);
+    return this.musicianService.update(id, updateMusicianDto, image);
   }
 
   @Delete(':id')
