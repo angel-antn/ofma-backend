@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { CreateUserDto, LoginUserDto } from './dto';
-import { getUser } from './decorators/get-user.decorator';
 import { User } from './entities/user.entity';
+import { getUser } from 'src/common/decorators/get-user.decorator';
+import { ValidRoles } from 'src/common/enums/valid-roles.enum';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('user')
 export class UserController {
@@ -21,7 +22,7 @@ export class UserController {
   }
 
   @Get('me')
-  @UseGuards(AuthGuard())
+  @Auth(ValidRoles.user)
   me(@getUser() user: User) {
     return { user };
   }

@@ -12,7 +12,7 @@ import { CreateUserDto, LoginUserDto } from './dto/';
 import { User } from './entities/user.entity';
 
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class UserService {
@@ -32,7 +32,7 @@ export class UserService {
       await this.userRepository.save(user);
       delete user.isActive;
       delete user.password;
-      return { user, token: this.generateJwt({ id: user.id }) };
+      return { user, token: this.generateJwt({ id: user.id, role: 'user' }) };
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -57,7 +57,7 @@ export class UserService {
       throw new UnauthorizedException('not valid password');
     }
     delete user.password;
-    return { user, token: this.generateJwt({ id: user.id }) };
+    return { user, token: this.generateJwt({ id: user.id, role: 'user' }) };
   }
 
   private generateJwt(payload: JwtPayload) {

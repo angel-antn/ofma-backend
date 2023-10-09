@@ -20,6 +20,8 @@ export class AdminUser {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  role: string;
+
   @BeforeInsert()
   @BeforeUpdate()
   checkFieldsBefore() {

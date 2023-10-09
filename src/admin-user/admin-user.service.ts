@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 
 import { CreateAdminUserDto, LoginAdminUserDto } from './dto';
 import { AdminUser } from './entities/admin-user.entity';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from '../common/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AdminUserService {
@@ -36,7 +36,7 @@ export class AdminUserService {
       delete adminUser.password;
       return {
         'admin-user': adminUser,
-        token: this.generateJwt({ id: adminUser.id }),
+        token: this.generateJwt({ id: adminUser.id, role: 'admin_user' }),
       };
     } catch (err) {
       this.handleExceptions(err);
@@ -62,7 +62,7 @@ export class AdminUserService {
     delete adminUser.password;
     return {
       'admin-user': adminUser,
-      token: this.generateJwt({ id: adminUser.id }),
+      token: this.generateJwt({ id: adminUser.id, role: 'admin_user' }),
     };
   }
 

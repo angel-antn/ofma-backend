@@ -26,6 +26,8 @@ export class User {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  role: string;
+
   @BeforeInsert()
   @BeforeUpdate()
   checkFieldsBefore() {

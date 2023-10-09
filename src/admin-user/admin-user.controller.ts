@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AdminUserService } from './admin-user.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
 import { LoginAdminUserDto } from './dto';
 import { AdminUser } from './entities/admin-user.entity';
-import { AuthGuard } from '@nestjs/passport';
-import { getAdminUser } from './decorators/get-admin-user.decorator';
+import { getUser } from 'src/common/decorators/get-user.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
+import { ValidRoles } from 'src/common/enums/valid-roles.enum';
 
 @Controller('admin-user')
 export class AdminUserController {
@@ -21,8 +22,8 @@ export class AdminUserController {
   }
 
   @Get('me')
-  @UseGuards(AuthGuard())
-  me(@getAdminUser() adminUser: AdminUser) {
+  @Auth(ValidRoles.admin_user)
+  me(@getUser() adminUser: AdminUser) {
     return { adminUser };
   }
 }

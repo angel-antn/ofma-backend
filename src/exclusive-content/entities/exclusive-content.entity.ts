@@ -13,4 +13,7 @@ export class ExclusiveContent {
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
+
+  @Column('bool', { default: false })
+  isHighlighted: boolean;
 }
