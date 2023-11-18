@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMusicianDto {
   @IsString()
@@ -11,7 +18,24 @@ export class CreateMusicianDto {
   @IsString()
   description: string;
 
+  @IsString()
+  @IsEmail()
+  email: string;
+
   @Type(() => Date)
   @IsDate()
   birthdate: Date;
+
+  @Type(() => Date)
+  @IsDate()
+  startdate: Date;
+
+  @Type(() => Boolean)
+  @IsBoolean()
+  @IsOptional()
+  isHighlighted?: boolean;
+
+  @IsString()
+  @IsIn(['mujer', 'hombre', 'otro'])
+  gender: string;
 }

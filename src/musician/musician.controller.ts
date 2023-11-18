@@ -16,12 +16,15 @@ import { CreateMusicianDto } from './dto/create-musician.dto';
 import { UpdateMusicianDto } from './dto/update-musician.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { imageInterceptor } from 'src/file/interceptors/image.interceptor';
+import { ValidRoles } from 'src/common/enums/valid-roles.enum';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('musician')
 export class MusicianController {
   constructor(private readonly musicianService: MusicianService) {}
 
   @Post()
+  @Auth(ValidRoles.admin_user)
   @UseInterceptors(imageInterceptor('musician'))
   create(
     @Body() createMusicianDto: CreateMusicianDto,
@@ -31,8 +34,13 @@ export class MusicianController {
   }
 
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.musicianService.findAll(paginationDto);
+  findAll() {
+    return this.musicianService.findAll();
+  }
+
+  @Get('paginated')
+  findAllPaginated(@Query() paginationDto: PaginationDto) {
+    return this.musicianService.findAllPaginated(paginationDto);
   }
 
   @Get(':id')
@@ -41,6 +49,7 @@ export class MusicianController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin_user)
   @UseInterceptors(imageInterceptor('musician'))
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -51,6 +60,7 @@ export class MusicianController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin_user)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.musicianService.remove(id);
   }

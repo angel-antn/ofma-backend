@@ -26,6 +26,9 @@ export class User {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  @Column('bool', { default: false })
+  canCheckOut: boolean;
+
   role: string;
 
   @BeforeInsert()

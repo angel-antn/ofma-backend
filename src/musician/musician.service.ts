@@ -23,6 +23,10 @@ export class MusicianService {
     createMusicianDto: CreateMusicianDto,
     image: Express.Multer.File,
   ) {
+    if (!createMusicianDto.isHighlighted) {
+      createMusicianDto.isHighlighted = false;
+    }
+
     if (!image) throw new BadRequestException('image is required');
     try {
       const musician = this.musicianRepository.create({
@@ -30,8 +34,10 @@ export class MusicianService {
       });
       await this.musicianRepository.save(musician);
       fs.renameSync(image.path, `./uploads/musician/${musician.id}.webp`);
+      delete musician.isActive;
       return {
         ...musician,
+        fullname: `${musician.name} ${musician.lastname}`,
         imageUrl: `${process.env.HOST_API}/file/musician/${musician.id}.webp`,
       };
     } catch (err) {
@@ -39,23 +45,44 @@ export class MusicianService {
     }
   }
 
-  async findAll(paginationDto: PaginationDto) {
+  async findAll() {
+    const result: Musician[] = await this.musicianRepository.find({
+      where: { isActive: true },
+    });
+    const response = result.map((musician) => {
+      return {
+        ...musician,
+        fullname: `${musician.name} ${musician.lastname}`,
+        imageUrl: `${process.env.HOST_API}/file/musician/${musician.id}.webp`,
+      };
+    });
+    return { totalCount: result.length, result: response };
+  }
+
+  async findAllPaginated(paginationDto: PaginationDto) {
     const { page = 1, pageSize = 10 } = paginationDto;
-    let result: Musician[] = await this.musicianRepository.find({
+    const result: Musician[] = await this.musicianRepository.find({
       where: { isActive: true },
       take: pageSize,
       skip: (page - 1) * pageSize,
     });
-    result = result.map((musician) => {
+    const response = result.map((musician) => {
       return {
         ...musician,
+        fullname: `${musician.name} ${musician.lastname}`,
         imageUrl: `${process.env.HOST_API}/file/musician/${musician.id}.webp`,
       };
     });
     const totalCount = await this.musicianRepository.count({
       where: { isActive: true },
     });
-    return { page, pageSize, totalCount, pageCount: result.length, result };
+    return {
+      page,
+      pageSize,
+      totalCount,
+      pageCount: result.length,
+      result: response,
+    };
   }
 
   async findOne(id: string) {
@@ -66,6 +93,7 @@ export class MusicianService {
     if (!result) throw new NotFoundException('Musician was not found');
     return {
       ...result,
+      fullname: `${result.name} ${result.lastname}`,
       imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
     };
   }
@@ -84,12 +112,16 @@ export class MusicianService {
 
     if (image) fs.renameSync(image.path, `./uploads/musician/${id}.webp`);
 
-    const result = await this.musicianRepository.save(musician);
-
-    return {
-      ...result,
-      imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
-    };
+    try {
+      const result = await this.musicianRepository.save(musician);
+      return {
+        ...result,
+        fullname: `${result.name} ${result.lastname}`,
+        imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
+      };
+    } catch (err) {
+      this.handleExceptions(err);
+    }
   }
 
   async remove(id: string) {

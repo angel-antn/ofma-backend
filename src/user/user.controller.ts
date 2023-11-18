@@ -1,7 +1,20 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Patch,
+  ParseUUIDPipe,
+  Param,
+} from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { CreateUserDto, LoginUserDto } from './dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  UpdateUserDto,
+  UserWillCheckOutDto,
+} from './dto';
 import { User } from './entities/user.entity';
 import { getUser } from 'src/common/decorators/get-user.decorator';
 import { ValidRoles } from 'src/common/enums/valid-roles.enum';
@@ -19,6 +32,21 @@ export class UserController {
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.userService.login(loginUserDto);
+  }
+
+  @Patch(':id')
+  @Auth(ValidRoles.user)
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto);
+  }
+
+  @Post('user-will-check-out')
+  @Auth(ValidRoles.admin_user)
+  changeCheckOutStatus(@Body() userWillCheckOutDto: UserWillCheckOutDto) {
+    return this.userService.changeCanCheckOutStatus(userWillCheckOutDto);
   }
 
   @Get('me')
