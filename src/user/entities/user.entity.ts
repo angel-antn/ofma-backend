@@ -27,7 +27,7 @@ export class User {
   isActive: boolean;
 
   @Column('bool', { default: false })
-  canCheckOut: boolean;
+  isCollaborator: boolean;
 
   role: string;
 

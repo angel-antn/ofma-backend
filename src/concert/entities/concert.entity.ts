@@ -1,10 +1,5 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ConcertMusician } from './concert-musician.entity';
 
 @Entity('Concerts')
 export class Concert {
@@ -14,49 +9,38 @@ export class Concert {
   @Column('text')
   name: string;
 
-  @Column('date', { array: true })
-  dates: Date[];
-
-  @Column('time', { array: true })
-  startAtHours: string[];
-
   @Column('date')
   startDate: Date;
+
+  @Column('time')
+  startAtHour: string;
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
-  @Column('double precision', { nullable: true })
-  lon: number;
+  @Column('bool', { default: true })
+  isOpen: boolean;
 
-  @Column('double precision', { nullable: true })
-  lat: number;
+  @Column('bool', { default: false })
+  hasFinish: boolean;
 
   @Column('text')
   description: string;
 
+  @Column('text')
+  address: string;
+
   @Column('int')
   entriesQty: number;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  fillFields() {
-    let auxDate: Date;
-    let auxHour: string;
-    for (let i = 0; i < this.dates.length; i++) {
-      for (let j = 0; j < this.dates.length - 1; j++) {
-        if (this.dates[j].getTime() > this.dates[j + 1].getTime()) {
-          auxDate = this.dates[j];
-          this.dates[j] = this.dates[j + 1];
-          this.dates[j + 1] = auxDate;
+  @Column('float')
+  pricePerEntry: number;
 
-          auxHour = this.startAtHours[j];
-          this.startAtHours[j] = this.startAtHours[j + 1];
-          this.startAtHours[j + 1] = auxHour;
-        }
-      }
-    }
-
-    this.startDate = this.dates[0];
-  }
+  //relations
+  @OneToMany(
+    () => ConcertMusician,
+    (concertMusician) => concertMusician.concert,
+    { cascade: true },
+  )
+  concertMusician?: ConcertMusician[];
 }

@@ -13,7 +13,7 @@ import {
   CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
-  UserWillCheckOutDto,
+  UserWillCollaborate,
 } from './dto';
 import { User } from './entities/user.entity';
 import { getUser } from 'src/common/decorators/get-user.decorator';
@@ -43,10 +43,16 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  @Post('user-will-check-out')
+  @Post('user-will-collaborate')
   @Auth(ValidRoles.admin_user)
-  changeCheckOutStatus(@Body() userWillCheckOutDto: UserWillCheckOutDto) {
-    return this.userService.changeCanCheckOutStatus(userWillCheckOutDto);
+  changeIsCollaboratorStatus(@Body() userWillCollaborate: UserWillCollaborate) {
+    return this.userService.changeIsCollaboratorStatus(userWillCollaborate);
+  }
+
+  @Get('collaborators')
+  @Auth(ValidRoles.admin_user)
+  getAllCollaborators() {
+    return this.userService.getAllColaborators();
   }
 
   @Get('me')

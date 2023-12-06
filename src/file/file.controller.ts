@@ -14,4 +14,13 @@ export class FileController {
     const path = this.fileService.findMusicianImage(fileName);
     response.sendFile(path);
   }
+
+  @Get('concert/:fileName')
+  findConcertImage(
+    @Param('fileName') fileName: string,
+    @Res() response: Response,
+  ) {
+    const path = this.fileService.findConcertImage(fileName);
+    response.sendFile(path);
+  }
 }

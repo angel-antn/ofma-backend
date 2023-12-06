@@ -9,6 +9,6 @@ import { CommonModule } from 'src/common/common.module';
   controllers: [MusicianController],
   providers: [MusicianService],
   imports: [TypeOrmModule.forFeature([Musician]), CommonModule],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, MusicianService],
 })
 export class MusicianModule {}

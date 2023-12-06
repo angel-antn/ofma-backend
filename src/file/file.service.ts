@@ -9,4 +9,10 @@ export class FileService {
     if (!existsSync(path)) throw new NotFoundException('image not found');
     return path;
   }
+
+  findConcertImage(fileName: string) {
+    const path = join(__dirname, '../../uploads/concert', fileName);
+    if (!existsSync(path)) throw new NotFoundException('image not found');
+    return path;
+  }
 }

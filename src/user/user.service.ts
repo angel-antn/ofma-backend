@@ -14,7 +14,7 @@ import { User } from './entities/user.entity';
 
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
-import { UserWillCheckOutDto } from './dto/user-will-check-out.dto';
+import { UserWillCollaborate } from './dto/user-will-collaborate.dto';
 
 @Injectable()
 export class UserService {
@@ -54,7 +54,7 @@ export class UserService {
         name: true,
         lastname: true,
         id: true,
-        canCheckOut: true,
+        isCollaborator: true,
       },
     });
 
@@ -82,18 +82,37 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async changeCanCheckOutStatus(userWillCheckOutDto: UserWillCheckOutDto) {
+  async changeIsCollaboratorStatus(userWillCheckOutDto: UserWillCollaborate) {
+    const { email, isCollaborator } = userWillCheckOutDto;
+    let registeredUser: User;
     try {
-      const { id, canCheckOut } = userWillCheckOutDto;
+      registeredUser = await this.userRepository.findOne({
+        where: { email },
+      });
+    } catch (err) {
+      this.handleExceptions(err);
+    }
+
+    if (!registeredUser) {
+      throw new BadRequestException('User is not registered');
+    }
+    try {
       const user = await this.userRepository.preload({
-        id,
-        canCheckOut,
+        id: registeredUser.id,
+        isCollaborator,
       });
       await this.userRepository.save(user);
       return { user };
     } catch (err) {
       this.handleExceptions(err);
     }
+  }
+
+  async getAllColaborators() {
+    const result = await this.userRepository.find({
+      where: { isActive: true, isCollaborator: true },
+    });
+    return { totalCount: result.length, result };
   }
 
   private generateJwt(payload: JwtPayload) {

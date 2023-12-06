@@ -28,7 +28,7 @@ export class CreateMusicianDto {
 
   @Type(() => Date)
   @IsDate()
-  startdate: Date;
+  startDate: Date;
 
   @Type(() => Boolean)
   @IsBoolean()

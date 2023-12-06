@@ -1,9 +1,11 @@
+import { ConcertMusician } from 'src/concert/entities/concert-musician.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('Musicians')
@@ -24,7 +26,7 @@ export class Musician {
   birthdate: Date;
 
   @Column('date')
-  startdate: Date;
+  startDate: Date;
 
   @Column('text')
   description: string;
@@ -37,6 +39,14 @@ export class Musician {
 
   @Column('text')
   gender: string;
+
+  //relations
+  @OneToMany(
+    () => ConcertMusician,
+    (concertMusician) => concertMusician.musician,
+    { cascade: true },
+  )
+  concertMusician?: ConcertMusician[];
 
   @BeforeInsert()
   @BeforeUpdate()
