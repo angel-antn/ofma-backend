@@ -87,8 +87,11 @@ export class ConcertService {
     result[0].concertMusician = result[0].concertMusician.map(
       (concertMusician) => {
         return {
-          id: concertMusician.musician.id,
+          id: concertMusician.id,
+          musicianId: concertMusician.musician.id,
           role: concertMusician.role,
+          name: concertMusician.musician.name,
+          lastname: concertMusician.musician.lastname,
           fullname: `${concertMusician.musician.name} ${concertMusician.musician.lastname}`,
           imageUrl: `${process.env.HOST_API}/file/musician/${concertMusician.musician.id}.webp`,
         } as any;
