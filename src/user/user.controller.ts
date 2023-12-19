@@ -13,7 +13,9 @@ import {
   CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
-  UserWillCollaborate,
+  UserWillCollaborateDto,
+  ResetPasswordRequestDto,
+  ValidateResetPasswordRequestDto,
 } from './dto';
 import { User } from './entities/user.entity';
 import { getUser } from 'src/common/decorators/get-user.decorator';
@@ -45,8 +47,10 @@ export class UserController {
 
   @Post('user-will-collaborate')
   @Auth(ValidRoles.admin_user)
-  changeIsCollaboratorStatus(@Body() userWillCollaborate: UserWillCollaborate) {
-    return this.userService.changeIsCollaboratorStatus(userWillCollaborate);
+  changeIsCollaboratorStatus(
+    @Body() userWillCollaborateDto: UserWillCollaborateDto,
+  ) {
+    return this.userService.changeIsCollaboratorStatus(userWillCollaborateDto);
   }
 
   @Get('collaborators')
@@ -59,5 +63,21 @@ export class UserController {
   @Auth(ValidRoles.user)
   me(@getUser() user: User) {
     return { user };
+  }
+
+  @Post('reset-password-request')
+  resetPasswordRequest(
+    @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
+  ) {
+    return this.userService.sendResetPasswordRequest(resetPasswordRequestDto);
+  }
+
+  @Post('validate-reset-password-request')
+  validateResetPasswordRequest(
+    @Body() validateResetPasswordRequestDto: ValidateResetPasswordRequestDto,
+  ) {
+    return this.userService.validateResetPasswordRequest(
+      validateResetPasswordRequestDto,
+    );
   }
 }

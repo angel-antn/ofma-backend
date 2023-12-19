@@ -29,6 +29,9 @@ export class User {
   @Column('bool', { default: false })
   isCollaborator: boolean;
 
+  @Column('text', { nullable: true, select: false })
+  resetPasswordOtp: string;
+
   role: string;
 
   @BeforeInsert()

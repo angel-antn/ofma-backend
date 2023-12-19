@@ -1,4 +1,5 @@
 import { ConcertMusician } from 'src/concert/entities/concert-musician.entity';
+import { ExclusiveContentMusician } from 'src/exclusive-content/entities/exclusive-content-musician.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -47,6 +48,13 @@ export class Musician {
     { cascade: true },
   )
   concertMusician?: ConcertMusician[];
+
+  @OneToMany(
+    () => ExclusiveContentMusician,
+    (exclusiveContentMusician) => exclusiveContentMusician.musician,
+    { cascade: true },
+  )
+  exclusiveContentMusician?: ExclusiveContentMusician[];
 
   @BeforeInsert()
   @BeforeUpdate()

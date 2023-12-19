@@ -20,6 +20,7 @@ import { ValidRoles } from 'src/common/enums/valid-roles.enum';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { AddMusicianInConcertDto } from './dto/add-musician-in-concert.dto';
 import { EditMusicianInConcertDto } from './dto/edit-musician-in-concert.dto';
+import { ConcertsQueriesDto } from './dto/get-concerts-queries.dto';
 
 @Controller('concert')
 export class ConcertController {
@@ -36,8 +37,8 @@ export class ConcertController {
   }
 
   @Get()
-  findAll() {
-    return this.concertService.findAll();
+  findAll(@Query() concertsQueriesDto: ConcertsQueriesDto) {
+    return this.concertService.findAll(concertsQueriesDto);
   }
 
   @Get('paginated')

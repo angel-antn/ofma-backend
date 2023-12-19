@@ -16,6 +16,7 @@ import { ConcertMusician } from './entities/concert-musician.entity';
 import { MusicianService } from 'src/musician/musician.service';
 import { AddMusicianInConcertDto } from './dto/add-musician-in-concert.dto';
 import { EditMusicianInConcertDto } from './dto/edit-musician-in-concert.dto';
+import { ConcertsQueriesDto } from './dto/get-concerts-queries.dto';
 
 @Injectable()
 export class ConcertService {
@@ -46,11 +47,18 @@ export class ConcertService {
     }
   }
 
-  async findAll() {
+  async findAll(concertsQueriesDto: ConcertsQueriesDto) {
+    const where = { isActive: true };
+
+    if (!concertsQueriesDto.all) {
+      where['hasFinish'] = false;
+    }
+
     const result = await this.concertRepository.find({
-      where: { isActive: true },
+      where,
       order: { startDate: 'DESC' },
     });
+
     const response = result.map((concert) => {
       return {
         ...concert,
