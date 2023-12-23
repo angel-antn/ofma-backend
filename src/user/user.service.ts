@@ -49,7 +49,10 @@ export class UserService {
       user.lastname = `${user.lastname[0].toUpperCase()}${user.lastname.slice(
         1,
       )}`;
-      return { user, token: this.generateJwt({ id: user.id, role: 'user' }) };
+      return {
+        user: { ...user, isPremium: false },
+        token: this.generateJwt({ id: user.id, role: 'user' }),
+      };
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -66,6 +69,7 @@ export class UserService {
         lastname: true,
         id: true,
         isCollaborator: true,
+        premiumUntil: true,
       },
     });
 
@@ -74,12 +78,21 @@ export class UserService {
     } else if (!bcrypt.compareSync(password, user.password)) {
       throw new UnauthorizedException('not valid password');
     }
+
     delete user.password;
+
+    const isPremium = this.checkIfUserIsPremium(user.premiumUntil);
+    delete user.premiumUntil;
+
     user.name = `${user.name[0].toUpperCase()}${user.name.slice(1)}`;
     user.lastname = `${user.lastname[0].toUpperCase()}${user.lastname.slice(
       1,
     )}`;
-    return { user, token: this.generateJwt({ id: user.id, role: 'user' }) };
+
+    return {
+      user: { ...user, isPremium },
+      token: this.generateJwt({ id: user.id, role: 'user' }),
+    };
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -177,6 +190,12 @@ export class UserService {
     } catch (err) {
       this.handleExceptions(err);
     }
+  }
+
+  private checkIfUserIsPremium(premiumUntil: Date | undefined): boolean {
+    if (!premiumUntil) return false;
+    const currentDate = new Date();
+    return currentDate <= new Date(premiumUntil);
   }
 
   private async findUserByEmail(email: string, selectOtp = false) {

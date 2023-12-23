@@ -32,6 +32,9 @@ export class User {
   @Column('text', { nullable: true, select: false })
   resetPasswordOtp: string;
 
+  @Column('date', { nullable: true, select: false })
+  premiumUntil: Date;
+
   role: string;
 
   @BeforeInsert()

@@ -28,7 +28,7 @@ export class ConcertController {
 
   @Post()
   @Auth(ValidRoles.admin_user)
-  @UseInterceptors(imageInterceptor('musician'))
+  @UseInterceptors(imageInterceptor('concert'))
   create(
     @Body() createConcertDto: CreateConcertDto,
     @UploadedFile() image: Express.Multer.File,
@@ -53,7 +53,7 @@ export class ConcertController {
 
   @Patch(':id')
   @Auth(ValidRoles.admin_user)
-  @UseInterceptors(imageInterceptor('musician'))
+  @UseInterceptors(imageInterceptor('concert'))
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateConcertDto: UpdateConcertDto,

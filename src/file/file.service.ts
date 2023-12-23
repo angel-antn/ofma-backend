@@ -15,4 +15,24 @@ export class FileService {
     if (!existsSync(path)) throw new NotFoundException('image not found');
     return path;
   }
+
+  findExclusiveContentImage(fileName: string) {
+    const path = join(
+      __dirname,
+      '../../uploads/exclusive-content/images',
+      fileName,
+    );
+    if (!existsSync(path)) throw new NotFoundException('image not found');
+    return path;
+  }
+
+  findExclusiveContentVideo(fileName: string) {
+    const path = join(
+      __dirname,
+      '../../uploads/exclusive-content/videos',
+      fileName,
+    );
+    if (!existsSync(path)) throw new NotFoundException('video not found');
+    return path;
+  }
 }

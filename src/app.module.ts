@@ -9,6 +9,9 @@ import { ConcertModule } from './concert/concert.module';
 import { ExclusiveContentModule } from './exclusive-content/exclusive-content.module';
 import { CommonModule } from './common/common.module';
 import { FileModule } from './file/file.module';
+import { PaymentModule } from './payment/payment.module';
+import { BankAccountModule } from './bank-account/bank-account.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { FileModule } from './file/file.module';
     ExclusiveContentModule,
     CommonModule,
     FileModule,
+    PaymentModule,
+    BankAccountModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],

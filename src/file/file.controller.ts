@@ -23,4 +23,22 @@ export class FileController {
     const path = this.fileService.findConcertImage(fileName);
     response.sendFile(path);
   }
+
+  @Get('exclusive-content/image/:fileName')
+  findExclusiveContentImage(
+    @Param('fileName') fileName: string,
+    @Res() response: Response,
+  ) {
+    const path = this.fileService.findExclusiveContentImage(fileName);
+    response.sendFile(path);
+  }
+
+  @Get('exclusive-content/video/:fileName')
+  findExclusiveContentVideo(
+    @Param('fileName') fileName: string,
+    @Res() response: Response,
+  ) {
+    const path = this.fileService.findExclusiveContentVideo(fileName);
+    response.sendFile(path);
+  }
 }
