@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   ParseUUIDPipe,
   UseInterceptors,
   UploadedFile,
@@ -15,9 +14,12 @@ import { Auth } from 'src/common/decorators/auth.decorator';
 import { ExclusiveContentService } from './exclusive-content.service';
 import { CreateExclusiveContentDto } from './dto/create-exclusive-content.dto';
 import { UpdateExclusiveContentDto } from './dto/update-exclusive-content.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ValidRoles } from 'src/common/enums/valid-roles.enum';
 import { imageInterceptor } from 'src/file/interceptors/image.interceptor';
+import { videoInterceptor } from 'src/file/interceptors/video.interceptor';
+import { ChangeShownStatusDto } from './dto/change-shown-status.dto';
+import { AddMusicianInContentDto } from './dto/add-musician-in-content.dto';
+import { EditMusicianInContentDto } from './dto/edit-musician-in-content.dto';
 
 @Controller('exclusive-content')
 export class ExclusiveContentController {
@@ -38,9 +40,25 @@ export class ExclusiveContentController {
     );
   }
 
+  @Post('upload-video/:id')
+  @Auth(ValidRoles.admin_user)
+  @UseInterceptors(videoInterceptor('exclusive-content/videos'))
+  uploadVideo(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile() video: Express.Multer.File,
+  ) {
+    return this.exclusiveContentService.uploadVideo(id, video);
+  }
+
+  @Post('change-shown-status')
+  @Auth(ValidRoles.admin_user)
+  changeShownStatus(@Body() changeShownStatusDto: ChangeShownStatusDto) {
+    return this.exclusiveContentService.changeShownStatus(changeShownStatusDto);
+  }
+
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.exclusiveContentService.findAll(paginationDto);
+  findAll() {
+    return this.exclusiveContentService.findAll();
   }
 
   @Get(':id')
@@ -60,6 +78,32 @@ export class ExclusiveContentController {
       id,
       updateExclusiveContentDto,
       image,
+    );
+  }
+
+  @Post('content-musician')
+  @Auth(ValidRoles.admin_user)
+  insertMusician(@Body() addMusicianInContentDto: AddMusicianInContentDto) {
+    return this.exclusiveContentService.addMusicianToContent(
+      addMusicianInContentDto,
+    );
+  }
+
+  @Delete('content-musician/:id')
+  @Auth(ValidRoles.admin_user)
+  deleteMusician(@Param('id', ParseUUIDPipe) id: string) {
+    return this.exclusiveContentService.deleteMusicianToContent(id);
+  }
+
+  @Patch('content-musician/:id')
+  @Auth(ValidRoles.admin_user)
+  updateMusician(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() editMusicianInContentDto: EditMusicianInContentDto,
+  ) {
+    return this.exclusiveContentService.updateMusicianToContent(
+      id,
+      editMusicianInContentDto,
     );
   }
 

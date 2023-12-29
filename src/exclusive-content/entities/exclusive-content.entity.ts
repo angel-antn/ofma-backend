@@ -21,8 +21,8 @@ export class ExclusiveContent {
   @Column('bool', { default: false })
   isHighlighted: boolean;
 
-  @Column('bool', { default: false })
-  isPublished: boolean;
+  @Column('bool', { default: true })
+  isShown: boolean;
 
   @Column('bool', { default: true })
   isDraft: boolean;

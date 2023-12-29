@@ -34,8 +34,9 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-#keys
+# Keys
 .env
 
-#images
+# Uploads
 uploads/**/*.webp
+uploads/**/*.mp4

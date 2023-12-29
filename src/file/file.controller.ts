@@ -24,7 +24,7 @@ export class FileController {
     response.sendFile(path);
   }
 
-  @Get('exclusive-content/image/:fileName')
+  @Get('exclusive-content/images/:fileName')
   findExclusiveContentImage(
     @Param('fileName') fileName: string,
     @Res() response: Response,
@@ -33,7 +33,7 @@ export class FileController {
     response.sendFile(path);
   }
 
-  @Get('exclusive-content/video/:fileName')
+  @Get('exclusive-content/videos/:fileName')
   findExclusiveContentVideo(
     @Param('fileName') fileName: string,
     @Res() response: Response,

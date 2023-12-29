@@ -17,7 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           throw new Error('JWT secret misconfigured');
         return {
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '1d' },
+          signOptions: { expiresIn: '7d' },
         };
       },
     }),

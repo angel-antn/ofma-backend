@@ -1,7 +1,11 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AdminUserService } from './admin-user.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
-import { LoginAdminUserDto } from './dto';
+import {
+  LoginAdminUserDto,
+  ResetPasswordRequestDto,
+  ValidateResetPasswordRequestDto,
+} from './dto';
 import { AdminUser } from './entities/admin-user.entity';
 import { getUser } from 'src/common/decorators/get-user.decorator';
 import { Auth } from 'src/common/decorators/auth.decorator';
@@ -25,5 +29,23 @@ export class AdminUserController {
   @Auth(ValidRoles.admin_user)
   me(@getUser() adminUser: AdminUser) {
     return { adminUser };
+  }
+
+  @Post('reset-password-request')
+  resetPasswordRequest(
+    @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
+  ) {
+    return this.adminUserService.sendResetPasswordRequest(
+      resetPasswordRequestDto,
+    );
+  }
+
+  @Post('validate-reset-password-request')
+  validateResetPasswordRequest(
+    @Body() validateResetPasswordRequestDto: ValidateResetPasswordRequestDto,
+  ) {
+    return this.adminUserService.validateResetPasswordRequest(
+      validateResetPasswordRequestDto,
+    );
   }
 }

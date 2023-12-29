@@ -20,6 +20,9 @@ export class AdminUser {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  @Column('text', { nullable: true, select: false })
+  resetPasswordOtp: string;
+
   role: string;
 
   @BeforeInsert()
