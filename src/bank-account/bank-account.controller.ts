@@ -12,10 +12,19 @@ import { CreateTransferBankAccountDto } from './dto/create-transfer-bank-account
 import { UpdateTransferBankAccountDto } from './dto/update-transfer-bank-account.dto';
 import { UpdateMobilePayBankAccountDto } from './dto/update-mobile-pay-bank-account.dto';
 import { UpdateZelleBankAccountDto } from './dto/update-zelle-bank-account.dto';
+import { CreateMobilePayBankAccountDto } from './dto/create-mobile-pay-bank-account.dto';
+import { CreateZelleBankAccountDto } from './dto/create-zelle-bank-account.dto';
 
 @Controller('bank-account')
 export class BankAccountController {
   constructor(private readonly bankAccountService: BankAccountService) {}
+
+  // all
+
+  @Get()
+  findAll() {
+    return this.bankAccountService.findAll();
+  }
 
   //transfer
 
@@ -58,9 +67,11 @@ export class BankAccountController {
 
   @Post('mobile-pay')
   createMobilePayAccount(
-    @Body() createBankAccountDto: CreateTransferBankAccountDto,
+    @Body() createMobilePayBankAccountDto: CreateMobilePayBankAccountDto,
   ) {
-    return this.bankAccountService.createMobilePayAccount(createBankAccountDto);
+    return this.bankAccountService.createMobilePayAccount(
+      createMobilePayBankAccountDto,
+    );
   }
 
   @Get('mobile-pay')
@@ -93,9 +104,11 @@ export class BankAccountController {
 
   @Post('zelle')
   createZelleAccount(
-    @Body() createBankAccountDto: CreateTransferBankAccountDto,
+    @Body() createZelleBankAccountDto: CreateZelleBankAccountDto,
   ) {
-    return this.bankAccountService.createZelleAccount(createBankAccountDto);
+    return this.bankAccountService.createZelleAccount(
+      createZelleBankAccountDto,
+    );
   }
 
   @Get('zelle')

@@ -1,12 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Bank } from 'src/bank/entities/bank.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('TransferBankAccounts')
 export class TransferBankAccount {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column('text')
-  bank: string;
 
   @Column('text')
   accountNumber: string;
@@ -25,4 +23,7 @@ export class TransferBankAccount {
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
+
+  @ManyToOne(() => Bank, (bank) => bank.transferBankAccount)
+  bank: Bank;
 }

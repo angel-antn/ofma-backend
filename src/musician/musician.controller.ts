@@ -18,6 +18,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { imageInterceptor } from 'src/file/interceptors/image.interceptor';
 import { ValidRoles } from 'src/common/enums/valid-roles.enum';
 import { Auth } from 'src/common/decorators/auth.decorator';
+import { MusicianQueriesDto } from './dto/get-musician-queries.dto';
 
 @Controller('musician')
 export class MusicianController {
@@ -34,8 +35,8 @@ export class MusicianController {
   }
 
   @Get()
-  findAll() {
-    return this.musicianService.findAll();
+  findAll(@Query() musicianQueriesDto: MusicianQueriesDto) {
+    return this.musicianService.findAll(musicianQueriesDto);
   }
 
   @Get('paginated')

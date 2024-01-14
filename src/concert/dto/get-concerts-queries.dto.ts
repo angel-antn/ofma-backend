@@ -1,9 +1,7 @@
-import { IsOptional, IsBoolean } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsBooleanString } from 'class-validator';
 
 export class ConcertsQueriesDto {
   @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  all: boolean = true;
+  @IsBooleanString()
+  all: 'true' | 'false' = 'true';
 }

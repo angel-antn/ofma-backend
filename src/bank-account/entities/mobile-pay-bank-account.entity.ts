@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Bank } from 'src/bank/entities/bank.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('MobilePayBankAccounts')
 export class MobilePayBankAccount {
@@ -9,9 +10,6 @@ export class MobilePayBankAccount {
   accountHolderPhone: string;
 
   @Column('text')
-  bank: string;
-
-  @Column('text')
   accountHolderDocument: string;
 
   @Column('text', { unique: true })
@@ -19,4 +17,7 @@ export class MobilePayBankAccount {
 
   @Column('bool', { default: true, select: false })
   isActive: boolean;
+
+  @ManyToOne(() => Bank, (bank) => bank.mobilePayBankAccount)
+  bank: Bank;
 }

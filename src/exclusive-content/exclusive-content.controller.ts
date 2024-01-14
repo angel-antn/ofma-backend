@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { ExclusiveContentService } from './exclusive-content.service';
@@ -20,6 +21,7 @@ import { videoInterceptor } from 'src/file/interceptors/video.interceptor';
 import { ChangeShownStatusDto } from './dto/change-shown-status.dto';
 import { AddMusicianInContentDto } from './dto/add-musician-in-content.dto';
 import { EditMusicianInContentDto } from './dto/edit-musician-in-content.dto';
+import { ExclusiveContentQueriesDto } from './dto/get-exclusive-content-queries.dto';
 
 @Controller('exclusive-content')
 export class ExclusiveContentController {
@@ -57,8 +59,8 @@ export class ExclusiveContentController {
   }
 
   @Get()
-  findAll() {
-    return this.exclusiveContentService.findAll();
+  findAll(@Query() exclusiveContentQueriesDto: ExclusiveContentQueriesDto) {
+    return this.exclusiveContentService.findAll(exclusiveContentQueriesDto);
   }
 
   @Get(':id')

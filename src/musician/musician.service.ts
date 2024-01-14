@@ -11,6 +11,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Musician } from './entities/musician.entity';
 import { Repository } from 'typeorm';
+import { MusicianQueriesDto } from './dto/get-musician-queries.dto';
 
 @Injectable()
 export class MusicianService {
@@ -45,10 +46,30 @@ export class MusicianService {
     }
   }
 
-  async findAll() {
-    const result: Musician[] = await this.musicianRepository.find({
-      where: { isActive: true },
-    });
+  async findAll(musicianQueriesDto: MusicianQueriesDto) {
+    if (musicianQueriesDto.name == '') musicianQueriesDto.name = undefined;
+
+    const query = this.musicianRepository.createQueryBuilder('musicians');
+
+    query.where('musicians.isActive = :isActive', { isActive: true });
+
+    if (musicianQueriesDto.name) {
+      query.andWhere(
+        "CONCAT(LOWER(musicians.name), ' ', LOWER(musicians.lastname)) LIKE LOWER(:name)",
+        {
+          name: `%${musicianQueriesDto.name}%`,
+        },
+      );
+    }
+
+    if (musicianQueriesDto.highlighted == 'true') {
+      query.andWhere('musicians.isHighlighted = :isHighlighted', {
+        isHighlighted: true,
+      });
+    }
+
+    const result = await query.getMany();
+
     const response = result.map((musician) => {
       return {
         ...musician,
@@ -86,15 +107,32 @@ export class MusicianService {
   }
 
   async findOne(id: string) {
-    const result = await this.musicianRepository.findOneBy({
-      id,
-      isActive: true,
+    const result = await this.musicianRepository.findOne({
+      where: { id, isActive: true },
     });
+
     if (!result) throw new NotFoundException('Musician was not found');
+
+    const concertCount = await this.musicianRepository
+      .createQueryBuilder('musician')
+      .leftJoin('musician.concertMusician', 'concertMusician')
+      .select('COUNT(DISTINCT concertMusician.concertId)')
+      .where('musician.id = :id', { id })
+      .getRawOne();
+
+    const exclusiveContentCount = await this.musicianRepository
+      .createQueryBuilder('musician')
+      .leftJoin('musician.exclusiveContentMusician', 'exclusiveContentMusician')
+      .select('COUNT(DISTINCT exclusiveContentMusician.exclusiveContentId)')
+      .where('musician.id = :id', { id })
+      .getRawOne();
+
     return {
       ...result,
       fullname: `${result.name} ${result.lastname}`,
       imageUrl: `${process.env.HOST_API}/file/musician/${id}.webp`,
+      concertCount: concertCount.count,
+      exclusiveContentCount: exclusiveContentCount.count,
     };
   }
 

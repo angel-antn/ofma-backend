@@ -16,6 +16,7 @@ import { EditMusicianInContentDto } from './dto/edit-musician-in-content.dto';
 import { AddMusicianInContentDto } from './dto/add-musician-in-content.dto';
 import { ExclusiveContentMusician } from './entities/exclusive-content-musician.entity';
 import { MusicianService } from 'src/musician/musician.service';
+import { ExclusiveContentQueriesDto } from './dto/get-exclusive-content-queries.dto';
 
 @Injectable()
 export class ExclusiveContentService {
@@ -101,10 +102,47 @@ export class ExclusiveContentService {
     }
   }
 
-  async findAll() {
-    const result = await this.exclusiveContentRepository.find({
-      where: { isActive: true },
-    });
+  async findAll(exclusiveContentQueriesDto: ExclusiveContentQueriesDto) {
+    if (exclusiveContentQueriesDto.name == '')
+      exclusiveContentQueriesDto.name = undefined;
+
+    const query =
+      this.exclusiveContentRepository.createQueryBuilder('exclusiveContent');
+
+    query.where('exclusiveContent.isActive = :isActive', { isActive: true });
+
+    if (exclusiveContentQueriesDto.name) {
+      query.andWhere('LOWER(exclusiveContent.name) LIKE LOWER(:name)', {
+        name: `%${exclusiveContentQueriesDto.name}%`,
+      });
+    }
+
+    if (exclusiveContentQueriesDto.category) {
+      query.andWhere('exclusiveContent.category = :category', {
+        category: exclusiveContentQueriesDto.category,
+      });
+    }
+
+    if (exclusiveContentQueriesDto.highlighted == 'true') {
+      query.andWhere('exclusiveContent.isHighlighted = :isHighlighted', {
+        isHighlighted: true,
+      });
+    }
+
+    if (exclusiveContentQueriesDto.shown == 'true') {
+      query.andWhere('exclusiveContent.isShown = :isShown', {
+        isShown: true,
+      });
+    }
+
+    if (exclusiveContentQueriesDto.published == 'true') {
+      query.andWhere('exclusiveContent.isDraft = :isDraft', {
+        isDraft: false,
+      });
+    }
+
+    const result = await query.getMany();
+
     const response = result.map((exclusiveContent) => {
       let res = {
         ...exclusiveContent,
@@ -135,25 +173,35 @@ export class ExclusiveContentService {
   }
 
   async findOne(id: string) {
-    const result = await this.exclusiveContentRepository.find({
-      where: { id, isActive: true },
-      relations: {
-        exclusiveContentMusician: { musician: true },
-      },
-    });
+    const result = await this.exclusiveContentRepository
+      .createQueryBuilder('exclusiveContent')
+      .leftJoinAndSelect(
+        'exclusiveContent.exclusiveContentMusician',
+        'exclusiveContentMusician',
+      )
+      .leftJoinAndSelect('exclusiveContentMusician.musician', 'musician')
+      .addSelect('musician.isActive')
+      .where('exclusiveContent.id = :id', { id })
+      .andWhere('exclusiveContent.isActive = :isActive', { isActive: true })
+      .getMany();
 
     if (!result[0]) throw new NotFoundException('Content was not found');
 
+    result[0].exclusiveContentMusician =
+      result[0].exclusiveContentMusician.filter((contentMusician) => {
+        return contentMusician.musician.isActive;
+      });
+
     result[0].exclusiveContentMusician = result[0].exclusiveContentMusician.map(
-      (concertMusician) => {
+      (contentMusician) => {
         return {
-          id: concertMusician.id,
-          musicianId: concertMusician.musician.id,
-          role: concertMusician.role,
-          name: concertMusician.musician.name,
-          lastname: concertMusician.musician.lastname,
-          fullname: `${concertMusician.musician.name} ${concertMusician.musician.lastname}`,
-          imageUrl: `${process.env.HOST_API}/file/musician/${concertMusician.musician.id}.webp`,
+          id: contentMusician.id,
+          musicianId: contentMusician.musician.id,
+          role: contentMusician.role,
+          name: contentMusician.musician.name,
+          lastname: contentMusician.musician.lastname,
+          fullname: `${contentMusician.musician.name} ${contentMusician.musician.lastname}`,
+          imageUrl: `${process.env.HOST_API}/file/musician/${contentMusician.musician.id}.webp`,
         } as any;
       },
     );

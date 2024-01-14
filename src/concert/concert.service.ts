@@ -48,14 +48,11 @@ export class ConcertService {
   }
 
   async findAll(concertsQueriesDto: ConcertsQueriesDto) {
-    const where = { isActive: true };
-
-    if (!concertsQueriesDto.all) {
-      where['hasFinish'] = false;
-    }
-
     const result = await this.concertRepository.find({
-      where,
+      where: {
+        isActive: true,
+        hasFinish: concertsQueriesDto.all == 'true' ? undefined : false,
+      },
       order: { startDate: 'DESC' },
     });
 
@@ -83,14 +80,22 @@ export class ConcertService {
   }
 
   async findOne(id: string) {
-    const result = await this.concertRepository.find({
-      where: { id, isActive: true },
-      relations: {
-        concertMusician: { musician: true },
-      },
-    });
+    const result = await this.concertRepository
+      .createQueryBuilder('concert')
+      .leftJoinAndSelect('concert.concertMusician', 'concertMusician')
+      .leftJoinAndSelect('concertMusician.musician', 'musician')
+      .addSelect('musician.isActive')
+      .where('concert.id = :id', { id })
+      .andWhere('concert.isActive = :isActive', { isActive: true })
+      .getMany();
 
     if (!result[0]) throw new NotFoundException('Concert was not found');
+
+    result[0].concertMusician = result[0].concertMusician.filter(
+      (concertMusician) => {
+        return concertMusician.musician.isActive;
+      },
+    );
 
     result[0].concertMusician = result[0].concertMusician.map(
       (concertMusician) => {

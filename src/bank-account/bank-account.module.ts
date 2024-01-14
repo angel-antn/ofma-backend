@@ -6,6 +6,7 @@ import { TransferBankAccount } from './entities/transfer-bank-account.entity';
 import { MobilePayBankAccount } from './entities/mobile-pay-bank-account.entity';
 import { ZelleBankAccount } from './entities/zelle-bank-account.entity';
 import { CommonModule } from 'src/common/common.module';
+import { BankModule } from 'src/bank/bank.module';
 
 @Module({
   controllers: [BankAccountController],
@@ -16,6 +17,7 @@ import { CommonModule } from 'src/common/common.module';
       MobilePayBankAccount,
       ZelleBankAccount,
     ]),
+    BankModule,
     CommonModule,
   ],
 })
