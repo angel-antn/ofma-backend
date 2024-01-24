@@ -1,5 +1,12 @@
 import { Bank } from 'src/bank/entities/bank.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from 'src/order/entities/order.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('TransferBankAccounts')
 export class TransferBankAccount {
@@ -24,6 +31,14 @@ export class TransferBankAccount {
   @Column('bool', { default: true, select: false })
   isActive: boolean;
 
+  @Column('bool', { default: true })
+  isShown: boolean;
+
   @ManyToOne(() => Bank, (bank) => bank.transferBankAccount)
   bank: Bank;
+
+  @OneToMany(() => Order, (order) => order.transferBankAccount, {
+    cascade: true,
+  })
+  orders?: Order[];
 }

@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateTransferBankAccountDto {
   @IsString()
@@ -15,6 +15,10 @@ export class CreateTransferBankAccountDto {
 
   @IsString()
   accountHolderDocument: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isShown: boolean = true;
 
   @IsString()
   @IsUUID()

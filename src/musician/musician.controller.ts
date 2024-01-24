@@ -19,7 +19,9 @@ import { imageInterceptor } from 'src/file/interceptors/image.interceptor';
 import { ValidRoles } from 'src/common/enums/valid-roles.enum';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { MusicianQueriesDto } from './dto/get-musician-queries.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Musician')
 @Controller('musician')
 export class MusicianController {
   constructor(private readonly musicianService: MusicianService) {}

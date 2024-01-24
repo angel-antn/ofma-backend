@@ -9,6 +9,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   controllers: [ExchangeRateController],
   providers: [ExchangeRateService],
   imports: [TypeOrmModule.forFeature([ExchangeRate]), CommonModule],
-  exports: [ExchangeRateService],
+  exports: [ExchangeRateService, TypeOrmModule],
 })
 export class ExchangeRateModule {}

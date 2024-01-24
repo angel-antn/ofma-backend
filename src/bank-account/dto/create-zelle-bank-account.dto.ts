@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateZelleBankAccountDto {
   @IsString()
@@ -9,4 +9,8 @@ export class CreateZelleBankAccountDto {
 
   @IsString()
   accountHolderEmail: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isShown: boolean;
 }

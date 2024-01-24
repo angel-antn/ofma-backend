@@ -20,5 +20,6 @@ import { BankModule } from 'src/bank/bank.module';
     BankModule,
     CommonModule,
   ],
+  exports: [TypeOrmModule, BankAccountService],
 })
 export class BankAccountModule {}

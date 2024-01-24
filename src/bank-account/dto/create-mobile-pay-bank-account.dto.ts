@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateMobilePayBankAccountDto {
   @IsString()
@@ -13,4 +13,8 @@ export class CreateMobilePayBankAccountDto {
   @IsString()
   @IsUUID()
   bankId: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isShown: boolean;
 }

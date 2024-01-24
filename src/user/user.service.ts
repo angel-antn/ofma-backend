@@ -95,6 +95,24 @@ export class UserService {
     };
   }
 
+  async findOne(id: string) {
+    let registeredUser: User;
+
+    try {
+      registeredUser = await this.userRepository.findOne({
+        where: { id, isActive: true },
+      });
+    } catch (err) {
+      this.handleExceptions(err);
+    }
+
+    if (!registeredUser) {
+      throw new BadRequestException('User is not registered');
+    }
+
+    return registeredUser;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({
       id,
@@ -126,9 +144,15 @@ export class UserService {
   }
 
   async getAllColaborators() {
-    const result = await this.userRepository.find({
+    let result = await this.userRepository.find({
       where: { isActive: true, isCollaborator: true },
     });
+    result = result.map((collaborator) => {
+      return {
+        ...collaborator,
+        fullname: `${collaborator.name} ${collaborator.lastname}`,
+      };
+    }) as any;
     return { totalCount: result.length, result };
   }
 

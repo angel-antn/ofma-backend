@@ -22,7 +22,9 @@ import { ChangeShownStatusDto } from './dto/change-shown-status.dto';
 import { AddMusicianInContentDto } from './dto/add-musician-in-content.dto';
 import { EditMusicianInContentDto } from './dto/edit-musician-in-content.dto';
 import { ExclusiveContentQueriesDto } from './dto/get-exclusive-content-queries.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Exclusive-content')
 @Controller('exclusive-content')
 export class ExclusiveContentController {
   constructor(

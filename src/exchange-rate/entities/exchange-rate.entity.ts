@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Order } from 'src/order/entities/order.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('ExchangeRate')
 export class ExchangeRate {
@@ -10,4 +11,7 @@ export class ExchangeRate {
 
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @OneToMany(() => Order, (order) => order.exchangeRate, { cascade: true })
+  orders?: Order[];
 }

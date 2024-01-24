@@ -10,7 +10,9 @@ import { AdminUser } from './entities/admin-user.entity';
 import { getUser } from 'src/common/decorators/get-user.decorator';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { ValidRoles } from 'src/common/enums/valid-roles.enum';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin-user')
 @Controller('admin-user')
 export class AdminUserController {
   constructor(private readonly adminUserService: AdminUserService) {}

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { BankAccountService } from './bank-account.service';
 import { CreateTransferBankAccountDto } from './dto/create-transfer-bank-account.dto';
@@ -14,7 +15,9 @@ import { UpdateMobilePayBankAccountDto } from './dto/update-mobile-pay-bank-acco
 import { UpdateZelleBankAccountDto } from './dto/update-zelle-bank-account.dto';
 import { CreateMobilePayBankAccountDto } from './dto/create-mobile-pay-bank-account.dto';
 import { CreateZelleBankAccountDto } from './dto/create-zelle-bank-account.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Bank-account')
 @Controller('bank-account')
 export class BankAccountController {
   constructor(private readonly bankAccountService: BankAccountService) {}
@@ -43,13 +46,13 @@ export class BankAccountController {
   }
 
   @Get('transfer/:id')
-  findOneTransferAccount(@Param('id') id: string) {
+  findOneTransferAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.findOneTransferAccount(id);
   }
 
   @Patch('transfer/:id')
   updateTransferAccount(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTransferBankAccountDto: UpdateTransferBankAccountDto,
   ) {
     return this.bankAccountService.updateTransferAccount(
@@ -59,7 +62,7 @@ export class BankAccountController {
   }
 
   @Delete('transfer/:id')
-  removeTransferAccount(@Param('id') id: string) {
+  removeTransferAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.removeTransferAccount(id);
   }
 
@@ -80,13 +83,13 @@ export class BankAccountController {
   }
 
   @Get('mobile-pay/:id')
-  findOneMobilePayAccount(@Param('id') id: string) {
+  findOneMobilePayAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.findOneMobilePayAccount(id);
   }
 
   @Patch('mobile-pay/:id')
   updateMobilePayAccount(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateMobilePayBankAccountDto: UpdateMobilePayBankAccountDto,
   ) {
     return this.bankAccountService.updateMobilePayAccount(
@@ -96,7 +99,7 @@ export class BankAccountController {
   }
 
   @Delete('mobile-pay/:id')
-  removeMobilePayAccount(@Param('id') id: string) {
+  removeMobilePayAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.removeMobilePayAccount(id);
   }
 
@@ -117,13 +120,13 @@ export class BankAccountController {
   }
 
   @Get('zelle/:id')
-  findOneZelleAccount(@Param('id') id: string) {
+  findOneZelleAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.findOneZelleAccount(id);
   }
 
   @Patch('zelle/:id')
   updateZelleAccount(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateZelleBankAccountDto: UpdateZelleBankAccountDto,
   ) {
     return this.bankAccountService.updateZelleAccount(
@@ -133,7 +136,7 @@ export class BankAccountController {
   }
 
   @Delete('zelle/:id')
-  removeZelleAccount(@Param('id') id: string) {
+  removeZelleAccount(@Param('id', ParseUUIDPipe) id: string) {
     return this.bankAccountService.removeZelleAccount(id);
   }
 }

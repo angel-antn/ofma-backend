@@ -21,7 +21,9 @@ import { Auth } from 'src/common/decorators/auth.decorator';
 import { AddMusicianInConcertDto } from './dto/add-musician-in-concert.dto';
 import { EditMusicianInConcertDto } from './dto/edit-musician-in-concert.dto';
 import { ConcertsQueriesDto } from './dto/get-concerts-queries.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Concert')
 @Controller('concert')
 export class ConcertController {
   constructor(private readonly concertService: ConcertService) {}

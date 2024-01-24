@@ -1,9 +1,11 @@
+import { Order } from 'src/order/entities/order.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('Users')
@@ -36,6 +38,9 @@ export class User {
   premiumUntil: Date;
 
   role: string;
+
+  @OneToMany(() => Order, (order) => order.user, { cascade: true })
+  orders?: Order[];
 
   @BeforeInsert()
   @BeforeUpdate()

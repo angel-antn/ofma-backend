@@ -52,6 +52,7 @@ export class BankAccountService {
   async findAllTransferAccount() {
     const result = await this.transferBankAccountRepository.find({
       where: { isActive: true },
+      relations: { bank: true },
     });
 
     return { totalCount: result.length, result };
@@ -133,6 +134,7 @@ export class BankAccountService {
   async findAllMobilePayAccount() {
     const result = await this.mobilePayBankAccountRepository.find({
       where: { isActive: true },
+      relations: { bank: true },
     });
 
     return { totalCount: result.length, result };
@@ -200,7 +202,7 @@ export class BankAccountService {
     try {
       const zelleBankAccount: ZelleBankAccount =
         this.zelleBankAccountRepository.create(createZelleBankAccountDto);
-      await this.transferBankAccountRepository.save(zelleBankAccount);
+      await this.zelleBankAccountRepository.save(zelleBankAccount);
       return zelleBankAccount;
     } catch (err) {
       this.handleExceptions(err);
@@ -265,8 +267,8 @@ export class BankAccountService {
     const [transferBankAccounts, mobilePayBankAccounts, zelleBankAccounts] =
       await Promise.all([
         this.findAllTransferAccount(),
-        this.findAllTransferAccount(),
-        this.findAllTransferAccount(),
+        this.findAllMobilePayAccount(),
+        this.findAllZelleAccount(),
       ]);
 
     return { transferBankAccounts, mobilePayBankAccounts, zelleBankAccounts };
