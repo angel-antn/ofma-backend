@@ -17,6 +17,7 @@ import { MobilePayBankAccount } from 'src/bank-account/entities/mobile-pay-bank-
 import { TransferBankAccount } from 'src/bank-account/entities/transfer-bank-account.entity';
 import { ZelleBankAccount } from 'src/bank-account/entities/zelle-bank-account.entity';
 import { ExchangeRate } from 'src/exchange-rate/entities/exchange-rate.entity';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class OrderService {
@@ -145,6 +146,27 @@ export class OrderService {
     });
 
     return { totalCount: result.length, result };
+  }
+
+  async findAllPaginatedByUserId(userId: string, paginationDto: PaginationDto) {
+    const { page = 1, pageSize = 5 } = paginationDto;
+    const result = await this.orderRepository.find({
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      where: { user: { id: userId } },
+      relations: {
+        user: true,
+        exchangeRate: true,
+        transferBankAccount: true,
+        mobilePayBankAccount: true,
+        zelleBankAccount: true,
+      },
+    });
+    const totalCount = await this.orderRepository.count({
+      where: { user: { id: userId } },
+    });
+
+    return { totalCount, page, pageSize, result };
   }
 
   async findOne(id: string) {

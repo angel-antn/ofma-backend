@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Order')
 @Controller('order')
@@ -33,8 +35,11 @@ export class OrderController {
   }
 
   @Get('user/:id')
-  findAllByUserId(@Param('id', ParseUUIDPipe) id: string) {
-    return this.orderService.findAllByUserId(id);
+  findAllByUserId(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.orderService.findAllPaginatedByUserId(id, paginationDto);
   }
 
   @Patch(':id')
