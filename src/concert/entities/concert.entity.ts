@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ConcertMusician } from './concert-musician.entity';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Entity('Concerts')
 export class Concert {
@@ -43,4 +44,7 @@ export class Concert {
     { cascade: true },
   )
   concertMusician?: ConcertMusician[];
+
+  @OneToMany(() => Ticket, (ticket) => ticket.concert, { cascade: true })
+  tickets?: Ticket[];
 }

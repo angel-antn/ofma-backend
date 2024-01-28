@@ -82,7 +82,6 @@ export class UserService {
     delete user.password;
 
     const isPremium = this.checkIfUserIsPremium(user.premiumUntil);
-    delete user.premiumUntil;
 
     user.name = `${user.name[0].toUpperCase()}${user.name.slice(1)}`;
     user.lastname = `${user.lastname[0].toUpperCase()}${user.lastname.slice(
@@ -91,6 +90,36 @@ export class UserService {
 
     return {
       user: { ...user, isPremium },
+      token: this.generateJwt({ id: user.id, role: 'user' }),
+    };
+  }
+
+  async me(user: User) {
+    const result = await this.userRepository.findOne({
+      where: { id: user.id, isActive: true },
+      select: {
+        email: true,
+        name: true,
+        lastname: true,
+        id: true,
+        isCollaborator: true,
+        premiumUntil: true,
+      },
+    });
+
+    const isPremium = this.checkIfUserIsPremium(result.premiumUntil);
+
+    if (!user) {
+      throw new UnauthorizedException('not valid token');
+    }
+
+    result.name = `${user.name[0].toUpperCase()}${user.name.slice(1)}`;
+    result.lastname = `${user.lastname[0].toUpperCase()}${user.lastname.slice(
+      1,
+    )}`;
+
+    return {
+      user: { ...result, isPremium },
       token: this.generateJwt({ id: user.id, role: 'user' }),
     };
   }
@@ -214,6 +243,20 @@ export class UserService {
     } catch (err) {
       this.handleExceptions(err);
     }
+  }
+
+  async makeUserPremium(id: string) {
+    const premiumUntil: Date = new Date();
+    premiumUntil.setDate(premiumUntil.getDate() + 30);
+
+    const user = await this.userRepository.preload({
+      id,
+      premiumUntil,
+    });
+
+    if (!user) throw new NotFoundException('User was not found');
+
+    return await this.userRepository.save(user);
   }
 
   private checkIfUserIsPremium(premiumUntil: Date | undefined): boolean {

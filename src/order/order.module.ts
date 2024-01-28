@@ -7,6 +7,8 @@ import { CommonModule } from 'src/common/common.module';
 import { Order } from './entities/order.entity';
 import { ExchangeRateModule } from 'src/exchange-rate/exchange-rate.module';
 import { BankAccountModule } from 'src/bank-account/bank-account.module';
+import { TicketModule } from 'src/ticket/ticket.module';
+import { ConcertModule } from 'src/concert/concert.module';
 
 @Module({
   controllers: [OrderController],
@@ -17,6 +19,8 @@ import { BankAccountModule } from 'src/bank-account/bank-account.module';
     ExchangeRateModule,
     BankAccountModule,
     CommonModule,
+    TicketModule,
+    ConcertModule,
   ],
   exports: [TypeOrmModule, OrderService],
 })

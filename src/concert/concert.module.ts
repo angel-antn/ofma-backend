@@ -6,6 +6,7 @@ import { Concert } from './entities/concert.entity';
 import { CommonModule } from 'src/common/common.module';
 import { ConcertMusician } from './entities/concert-musician.entity';
 import { MusicianModule } from 'src/musician/musician.module';
+import { TicketModule } from 'src/ticket/ticket.module';
 
 @Module({
   controllers: [ConcertController],
@@ -13,8 +14,9 @@ import { MusicianModule } from 'src/musician/musician.module';
   imports: [
     TypeOrmModule.forFeature([Concert, ConcertMusician]),
     MusicianModule,
+    TicketModule,
     CommonModule,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, ConcertService],
 })
 export class ConcertModule {}

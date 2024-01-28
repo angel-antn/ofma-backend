@@ -17,6 +17,7 @@ import { MusicianService } from 'src/musician/musician.service';
 import { AddMusicianInConcertDto } from './dto/add-musician-in-concert.dto';
 import { EditMusicianInConcertDto } from './dto/edit-musician-in-concert.dto';
 import { ConcertsQueriesDto } from './dto/get-concerts-queries.dto';
+import { TicketService } from 'src/ticket/ticket.service';
 
 @Injectable()
 export class ConcertService {
@@ -26,6 +27,7 @@ export class ConcertService {
     @InjectRepository(ConcertMusician)
     private readonly concertMusicianRepository: Repository<ConcertMusician>,
     private readonly musicianService: MusicianService,
+    private readonly ticketService: TicketService,
   ) {}
 
   async create(createConcertDto: CreateConcertDto, image: Express.Multer.File) {
@@ -97,6 +99,10 @@ export class ConcertService {
       },
     );
 
+    const ticketSoldQty = await this.ticketService.countAllPerConcert(
+      result[0],
+    );
+
     result[0].concertMusician = result[0].concertMusician.map(
       (concertMusician) => {
         return {
@@ -114,6 +120,7 @@ export class ConcertService {
     return {
       ...result[0],
       imageUrl: `${process.env.HOST_API}/file/concert/${result[0].id}.webp`,
+      ticketSoldQty,
     };
   }
 

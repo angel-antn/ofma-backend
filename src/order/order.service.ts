@@ -18,6 +18,9 @@ import { TransferBankAccount } from 'src/bank-account/entities/transfer-bank-acc
 import { ZelleBankAccount } from 'src/bank-account/entities/zelle-bank-account.entity';
 import { ExchangeRate } from 'src/exchange-rate/entities/exchange-rate.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { TicketService } from 'src/ticket/ticket.service';
+import { ConcertService } from 'src/concert/concert.service';
+import { Concert } from 'src/concert/entities/concert.entity';
 
 @Injectable()
 export class OrderService {
@@ -27,6 +30,8 @@ export class OrderService {
     private readonly bankAccountService: BankAccountService,
     private readonly userService: UserService,
     private readonly exchangeRateService: ExchangeRateService,
+    private readonly ticketService: TicketService,
+    private readonly concertService: ConcertService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -36,6 +41,8 @@ export class OrderService {
       mobilePayBankAccountId,
       transferBankAccountId,
       zelleBankAccountId,
+      ticketQty,
+      concertId,
       ...orderData
     } = createOrderDto;
 
@@ -80,6 +87,22 @@ export class OrderService {
       ]);
     }
 
+    let createTickets: boolean = false;
+    let concert: Concert;
+
+    if (createOrderDto.type == 'suscripcion' && cont == 0) {
+      await this.userService.makeUserPremium(user.id);
+    } else if (createOrderDto.type == 'boleteria') {
+      if (!concertId || !ticketQty) {
+        throw new BadRequestException(
+          'when adquiring tickets, ticketQty and concertId are needed',
+        );
+      } else {
+        concert = await this.concertService.findOne(concertId);
+        createTickets = true;
+      }
+    }
+
     try {
       const order: Order = this.orderRepository.create({
         ...orderData,
@@ -90,6 +113,11 @@ export class OrderService {
         exchangeRate,
       });
       await this.orderRepository.save(order);
+
+      if (createTickets) {
+        await this.ticketService.create(ticketQty, order, concert);
+      }
+
       return order;
     } catch (err) {
       this.handleExceptions(err);
@@ -107,6 +135,9 @@ export class OrderService {
           mobilePayBankAccount: true,
           zelleBankAccount: true,
         },
+        order: {
+          createdAt: 'DESC',
+        },
       }),
       this.orderRepository.find({
         where: { status: 'verificado' },
@@ -117,6 +148,9 @@ export class OrderService {
           mobilePayBankAccount: true,
           zelleBankAccount: true,
         },
+        order: {
+          createdAt: 'DESC',
+        },
       }),
       this.orderRepository.find({
         where: { status: 'rechazado' },
@@ -126,6 +160,9 @@ export class OrderService {
           transferBankAccount: true,
           mobilePayBankAccount: true,
           zelleBankAccount: true,
+        },
+        order: {
+          createdAt: 'DESC',
         },
       }),
     ]);
@@ -142,6 +179,9 @@ export class OrderService {
         transferBankAccount: true,
         mobilePayBankAccount: true,
         zelleBankAccount: true,
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
 
@@ -160,6 +200,9 @@ export class OrderService {
         transferBankAccount: true,
         mobilePayBankAccount: true,
         zelleBankAccount: true,
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
     const totalCount = await this.orderRepository.count({
@@ -196,6 +239,13 @@ export class OrderService {
 
     try {
       const result = await this.orderRepository.save(order);
+      if (
+        order.type == 'suscripcion' &&
+        updateOrderDto.status == 'verificado'
+      ) {
+        await this.userService.makeUserPremium(order.user.id);
+      }
+
       return result;
     } catch (err) {
       this.handleExceptions(err);

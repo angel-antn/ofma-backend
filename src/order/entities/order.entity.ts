@@ -2,8 +2,15 @@ import { MobilePayBankAccount } from 'src/bank-account/entities/mobile-pay-bank-
 import { TransferBankAccount } from 'src/bank-account/entities/transfer-bank-account.entity';
 import { ZelleBankAccount } from 'src/bank-account/entities/zelle-bank-account.entity';
 import { ExchangeRate } from 'src/exchange-rate/entities/exchange-rate.entity';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'Orders' })
 export class Order {
@@ -50,4 +57,7 @@ export class Order {
     nullable: true,
   })
   zelleBankAccount?: ZelleBankAccount;
+
+  @OneToMany(() => Ticket, (ticket) => ticket.order, { cascade: true })
+  tickets?: Ticket[];
 }

@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsDate,
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -53,4 +54,16 @@ export class CreateOrderDto {
   @IsUUID()
   @IsOptional()
   zelleBankAccountId?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  @IsInt()
+  @IsOptional()
+  ticketQty?: number;
+
+  @IsString()
+  @IsUUID()
+  @IsOptional()
+  concertId?: string;
 }

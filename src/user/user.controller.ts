@@ -64,7 +64,7 @@ export class UserController {
   @Get('me')
   @Auth(ValidRoles.user)
   me(@getUser() user: User) {
-    return { user };
+    return this.userService.me(user);
   }
 
   @Post('reset-password-request')
