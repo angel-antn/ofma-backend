@@ -21,6 +21,8 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TicketService } from 'src/ticket/ticket.service';
 import { ConcertService } from 'src/concert/concert.service';
 import { Concert } from 'src/concert/entities/concert.entity';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class OrderService {
@@ -32,6 +34,7 @@ export class OrderService {
     private readonly exchangeRateService: ExchangeRateService,
     private readonly ticketService: TicketService,
     private readonly concertService: ConcertService,
+    private readonly httpService: HttpService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -131,8 +134,8 @@ export class OrderService {
         relations: {
           user: true,
           exchangeRate: true,
-          transferBankAccount: true,
-          mobilePayBankAccount: true,
+          transferBankAccount: { bank: true },
+          mobilePayBankAccount: { bank: true },
           zelleBankAccount: true,
         },
         order: {
@@ -236,19 +239,48 @@ export class OrderService {
     });
 
     if (!order) throw new NotFoundException('Order was not found');
-
+    const userId = (await this.findOne(id)).user.id;
     try {
       const result = await this.orderRepository.save(order);
       if (
         order.type == 'suscripcion' &&
         updateOrderDto.status == 'verificado'
       ) {
-        await this.userService.makeUserPremium(order.user.id);
+        await this.userService.makeUserPremium(userId);
       }
-
+      try {
+        await lastValueFrom(
+          this.httpService.post(
+            `${process.env.PUSH_HOST}/message?token=${process.env.PUSH_CLIENT_TOKEN}`,
+            {
+              title: userId,
+              message: this.getMessageToPush(id, status),
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            },
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
       return result;
     } catch (err) {
       this.handleExceptions(err);
+    }
+  }
+
+  private getMessageToPush(id: string, status: string) {
+    switch (status) {
+      case 'verificado':
+        return `La orden ${id} fue verificada`;
+      case 'rechazado':
+        return `La orden ${id} fue rechazada`;
+      default:
+        return `La orden ${id} ha cambiado de estatus`;
     }
   }
 

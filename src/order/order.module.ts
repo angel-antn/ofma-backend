@@ -9,6 +9,7 @@ import { ExchangeRateModule } from 'src/exchange-rate/exchange-rate.module';
 import { BankAccountModule } from 'src/bank-account/bank-account.module';
 import { TicketModule } from 'src/ticket/ticket.module';
 import { ConcertModule } from 'src/concert/concert.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [OrderController],
@@ -21,6 +22,7 @@ import { ConcertModule } from 'src/concert/concert.module';
     CommonModule,
     TicketModule,
     ConcertModule,
+    HttpModule,
   ],
   exports: [TypeOrmModule, OrderService],
 })

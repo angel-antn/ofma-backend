@@ -16,6 +16,7 @@ import { Repository } from 'typeorm';
 import { MobilePayBankAccount } from './entities/mobile-pay-bank-account.entity';
 import { ZelleBankAccount } from './entities/zelle-bank-account.entity';
 import { BankService } from 'src/bank/bank.service';
+import { GetBankAccountQueriesDto } from './dto/get-bank-account-queries.dto';
 
 @Injectable()
 export class BankAccountService {
@@ -49,9 +50,14 @@ export class BankAccountService {
     }
   }
 
-  async findAllTransferAccount() {
+  async findAllTransferAccount(
+    getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
     const result = await this.transferBankAccountRepository.find({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        isShown: getBankAccountQueriesDto.all == 'false' ? true : undefined,
+      },
       relations: { bank: true },
     });
 
@@ -131,9 +137,14 @@ export class BankAccountService {
     }
   }
 
-  async findAllMobilePayAccount() {
+  async findAllMobilePayAccount(
+    getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
     const result = await this.mobilePayBankAccountRepository.find({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        isShown: getBankAccountQueriesDto.all == 'false' ? true : undefined,
+      },
       relations: { bank: true },
     });
 
@@ -209,9 +220,14 @@ export class BankAccountService {
     }
   }
 
-  async findAllZelleAccount() {
+  async findAllZelleAccount(
+    getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
     const result = await this.zelleBankAccountRepository.find({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        isShown: getBankAccountQueriesDto.all == 'false' ? true : undefined,
+      },
     });
 
     return { totalCount: result.length, result };
@@ -263,12 +279,12 @@ export class BankAccountService {
   }
   // #endregion
 
-  async findAll() {
+  async findAll(getBankAccountQueriesDto: GetBankAccountQueriesDto) {
     const [transferBankAccounts, mobilePayBankAccounts, zelleBankAccounts] =
       await Promise.all([
-        this.findAllTransferAccount(),
-        this.findAllMobilePayAccount(),
-        this.findAllZelleAccount(),
+        this.findAllTransferAccount(getBankAccountQueriesDto),
+        this.findAllMobilePayAccount(getBankAccountQueriesDto),
+        this.findAllZelleAccount(getBankAccountQueriesDto),
       ]);
 
     return { transferBankAccounts, mobilePayBankAccounts, zelleBankAccounts };

@@ -73,7 +73,8 @@ export class TicketService {
       });
 
       try {
-        return await this.ticketRepository.save(usedTicket);
+        const response = await this.ticketRepository.save(usedTicket);
+        return { ...response, concert: ticket.concert };
       } catch (err) {
         this.handleExceptions(err);
       }
@@ -96,6 +97,7 @@ export class TicketService {
   private async findOne(id: string) {
     const result = await this.ticketRepository.findOne({
       where: { id },
+      relations: { concert: true },
     });
 
     return result;

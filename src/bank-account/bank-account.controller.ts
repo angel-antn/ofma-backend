@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { BankAccountService } from './bank-account.service';
 import { CreateTransferBankAccountDto } from './dto/create-transfer-bank-account.dto';
@@ -16,6 +17,7 @@ import { UpdateZelleBankAccountDto } from './dto/update-zelle-bank-account.dto';
 import { CreateMobilePayBankAccountDto } from './dto/create-mobile-pay-bank-account.dto';
 import { CreateZelleBankAccountDto } from './dto/create-zelle-bank-account.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { GetBankAccountQueriesDto } from './dto/get-bank-account-queries.dto';
 
 @ApiTags('Bank-account')
 @Controller('bank-account')
@@ -25,8 +27,8 @@ export class BankAccountController {
   // all
 
   @Get()
-  findAll() {
-    return this.bankAccountService.findAll();
+  findAll(@Query() getBankAccountQueriesDto: GetBankAccountQueriesDto) {
+    return this.bankAccountService.findAll(getBankAccountQueriesDto);
   }
 
   //transfer
@@ -41,8 +43,12 @@ export class BankAccountController {
   }
 
   @Get('transfer')
-  findAllTransferAccount() {
-    return this.bankAccountService.findAllTransferAccount();
+  findAllTransferAccount(
+    @Query() getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
+    return this.bankAccountService.findAllTransferAccount(
+      getBankAccountQueriesDto,
+    );
   }
 
   @Get('transfer/:id')
@@ -78,8 +84,12 @@ export class BankAccountController {
   }
 
   @Get('mobile-pay')
-  findAllMobilePayAccount() {
-    return this.bankAccountService.findAllMobilePayAccount();
+  findAllMobilePayAccount(
+    @Query() getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
+    return this.bankAccountService.findAllMobilePayAccount(
+      getBankAccountQueriesDto,
+    );
   }
 
   @Get('mobile-pay/:id')
@@ -115,8 +125,12 @@ export class BankAccountController {
   }
 
   @Get('zelle')
-  findAllZelleAccount() {
-    return this.bankAccountService.findAllZelleAccount();
+  findAllZelleAccount(
+    @Query() getBankAccountQueriesDto: GetBankAccountQueriesDto,
+  ) {
+    return this.bankAccountService.findAllZelleAccount(
+      getBankAccountQueriesDto,
+    );
   }
 
   @Get('zelle/:id')
