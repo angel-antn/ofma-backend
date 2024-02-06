@@ -76,18 +76,81 @@ export class OrderService {
         this.userService.findOne(userId),
         this.bankAccountService.findOneZelleAccount(zelleBankAccountId),
       ]);
+      //validacion
+      if (
+        (
+          await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect('order.zelleBankAccount', 'zelleBankAccount')
+            .where('user.id = :userId', { userId })
+            .andWhere('zelleBankAccount.id = :id', {
+              id: zelleBankAccount.id,
+            })
+            .andWhere('order.reference = :reference', {
+              reference: orderData.reference,
+            })
+            .getMany()
+        ).length > 0
+      ) {
+        throw new BadRequestException('reference already registered');
+      }
     } else if (transferBankAccountId) {
       [user, transferBankAccount, exchangeRate] = await Promise.all([
         this.userService.findOne(userId),
         this.bankAccountService.findOneTransferAccount(transferBankAccountId),
         this.exchangeRateService.get(exchangeRateId),
       ]);
+      //validacion
+      if (
+        (
+          await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect(
+              'order.transferBankAccount',
+              'transferBankAccount',
+            )
+            .where('user.id = :userId', { userId })
+            .andWhere('transferBankAccount.id = :id', {
+              id: transferBankAccount.id,
+            })
+            .andWhere('order.reference = :reference', {
+              reference: orderData.reference,
+            })
+            .getMany()
+        ).length > 0
+      ) {
+        throw new BadRequestException('reference already registered');
+      }
     } else {
       [user, mobilePayBankAccount, exchangeRate] = await Promise.all([
         this.userService.findOne(userId),
-        this.bankAccountService.findOneMobilePayAccount(zelleBankAccountId),
+        this.bankAccountService.findOneMobilePayAccount(mobilePayBankAccountId),
         this.exchangeRateService.get(exchangeRateId),
       ]);
+      //validacion
+      if (
+        (
+          await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect(
+              'order.mobilePayBankAccount',
+              'mobilePayBankAccount',
+            )
+            .where('user.id = :userId', { userId })
+            .andWhere('mobilePayBankAccount.id = :id', {
+              id: mobilePayBankAccount.id,
+            })
+            .andWhere('order.reference = :reference', {
+              reference: orderData.reference,
+            })
+            .getMany()
+        ).length > 0
+      ) {
+        throw new BadRequestException('reference already registered');
+      }
     }
 
     let createTickets: boolean = false;
@@ -128,7 +191,7 @@ export class OrderService {
   }
 
   async findAll() {
-    const [pending, success, failed] = await Promise.all([
+    const [pending, success, failed, returned] = await Promise.all([
       this.orderRepository.find({
         where: { status: 'pendiente' },
         relations: {
@@ -168,9 +231,22 @@ export class OrderService {
           createdAt: 'DESC',
         },
       }),
+      this.orderRepository.find({
+        where: { status: 'reembolsado' },
+        relations: {
+          user: true,
+          exchangeRate: true,
+          transferBankAccount: true,
+          mobilePayBankAccount: true,
+          zelleBankAccount: true,
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      }),
     ]);
 
-    return { pending, failed, success };
+    return { pending, failed, success, returned };
   }
 
   async findAllByUserId(userId: string) {
